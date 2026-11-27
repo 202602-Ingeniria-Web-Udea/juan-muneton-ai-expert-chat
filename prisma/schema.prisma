@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["public", "auth"]
+}
+
+enum app_role {
+  ADMIN
+  USER
+
+  @@schema("public")
+}
+
+enum message_role {
+  USER
+  ASSISTANT
+
+  @@schema("public")
+}
+
+model UserProfile {
+  id            String         @id @db.Uuid
+  full_name     String         @db.VarChar(120)
+  role          app_role       @default(USER)
+  enabled       Boolean        @default(true)
+  session_invalidated_at DateTime?      @db.Timestamptz(6)
+  created_at    DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime       @default(now()) @db.Timestamptz(6)
+  conversations Conversation[]
+
+  @@map("user_profiles")
+  @@schema("public")
+}
+
+model Conversation {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id     String      @db.Uuid
+  title       String      @default("Nueva conversación") @db.VarChar(150)
+  created_at  DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime    @default(now()) @db.Timestamptz(6)
+  userProfile UserProfile @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  messages    Message[]
+
+  @@index([updated_at(sort: Desc)], map: "idx_conversations_updated_at")
+  @@index([user_id], map: "idx_conversations_user_id")
+  @@map("conversations")
+  @@schema("public")
+}
+
+model Message {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversation_id String       @db.Uuid
+  role            message_role
+  content         String
+  created_at      DateTime     @default(now()) @db.Timestamptz(6)
+  conversation    Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([conversation_id], map: "idx_messages_conversation_id")
+  @@index([created_at], map: "idx_messages_created_at")
+  @@map("messages")
+  @@schema("public")
+}
+
+model AssistantConfig {
+  id           Int      @id @default(1)
+  name         String   @db.VarChar(100)
+  description  String   @db.VarChar(500)
+  specialty    String   @db.VarChar(150)
+  system_prompt String  @db.Text
+  enabled      Boolean  @default(true)
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
+  @@map("assistant_config")
+  @@schema("public")
+}
