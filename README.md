@@ -379,5 +379,3 @@ Los resultados de las pruebas realizadas fueron satisfactorios.
 Universidad de Antioquia
 
 Asignatura: Ingeniería Web
-
-Proyecto académico individual desarrollado como parte de la asignatura Ingeniería Web.
