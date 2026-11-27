@@ -199,8 +199,8 @@ Para ejecutar el proyecto localmente se necesita:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd ai-expert-chat
+git clone https://github.com/202602-Ingeniria-Web-Udea/juan-muneton-ai-expert-chat.git
+cd juan-muneton-ai-expert-chat
 ```
 
 ### 2. Configurar las variables de entorno
